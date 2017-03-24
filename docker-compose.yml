@@ -1,0 +1,48 @@
+version: '3'
+services:
+  # DataBases
+  data_temp:
+    restart: always
+    image: mongo:3.4
+    ports:
+      - 27017:27017
+
+  data_perm:
+    restart: always
+    image: mysql:8
+    ports:
+      - 3306:3306
+    volumes:
+      - ./perm_storage:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: dockerpassword
+
+  # Queue
+  rabbit:
+    restart: always
+    image: rabbitmq:3.6-management
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  # API
+  api:
+    restart: always
+    image: tomcat:8.5-alpine
+    ports:
+      - 8080:8080
+    links:
+      - rabbit
+      - data_perm
+      - data_temp
+
+  # FrontEnd
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    links:
+      - api
