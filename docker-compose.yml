@@ -28,13 +28,15 @@ services:
   # API
   api:
     restart: always
-    image: tomcat:8.5-alpine
+    image: tomcat:9-alpine
     ports:
       - 8080:8080
     links:
       - rabbit
       - data_perm
       - data_temp
+    volumes:
+      - ./api/target:/usr/local/tomcat/webapps
 
   # FrontEnd
   frontend:
