@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 PULL=0
+SAFARI=0
 
 # Usage
 usage()
@@ -11,6 +12,7 @@ cat << EOF
   usage $0 options
     -h: this message
     -f: pull repos and build
+    -s: do safari at the end
 EOF
 }
 
@@ -47,8 +49,13 @@ doPull()
 
 runScripts()
 {
-  ./frontend.sh
-  ./api.sh
+  if [ $SAFARI -eq 1 ]; then
+    ./frontend.sh -s
+    ./api.sh -s
+  else
+    ./frontend.sh
+    ./api.sh
+  fi
 }
 
 doFull

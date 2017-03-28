@@ -2,13 +2,63 @@
 
 CURRENT_DIR=$(pwd)
 
-docker-compose stop api
+SAFARI=0
 
-cd $CURRENT_DIR/api
-mvn clean install package
+# Usage
+usage()
+{
+cat << EOF
+  Build and start the frontend
 
-cd $CURRENT_DIR
-docker-compose up -d api
+  usage $0 options
+    -h: this message
+    -s: open safari at end
+EOF
+}
 
-sleep 20
-open -a safari http://api.fakenews.dev:8080
+# Options
+while getopts ":hs:" OPTION; do
+  case $OPTION in
+    h)
+      usage
+      exit
+      ;;
+
+    s)
+      SAFARI=1
+      ;;
+  esac
+done
+
+doBuild()
+{
+  docker-compose stop api
+
+  doMaven
+
+  cd $CURRENT_DIR
+  docker-compose up -d api
+}
+
+doMaven()
+{
+  cd $CURRENT_DIR/api
+  mvn clean install package
+}
+
+doSafari()
+{
+  sleep 20
+  open -a safari http://api.fakenews.dev:8080
+}
+
+doAPI()
+{
+  doBuild
+
+  if [ $SAFARI -eq 1 ]; then
+    doSafari
+  fi
+}
+
+doAPI

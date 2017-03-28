@@ -48,3 +48,6 @@ services:
       - 80:80
     links:
       - api
+    environment:
+        env: development
+
