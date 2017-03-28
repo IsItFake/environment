@@ -1,11 +1,54 @@
 #!/usr/bin/env bash
 
-git clone git@github.com:Keloran/fakenews_api.git api
-git clone git@github.com:Keloran/fakenews_frontend.git frontend
+PULL=0
 
-docker-compose up -d
-./frontend.sh
+# Usage
+usage()
+{
+cat << EOF
+  Build and start environment
 
-open -a safari http://localhost
+  usage $0 options
+    -h: this message
+    -f: pull repos and build
+EOF
+}
 
-docker-compose logs -f
+# Options
+while getopts ":hf:" OPTION; do
+  case $OPTION in
+    h)
+      usage
+      exit
+      ;;
+
+    f)
+      PULL=1
+      ;;
+  esac
+done
+
+doFull()
+{
+  if [ $PULL -eq 1 ]; then
+    doPull
+  fi
+
+  docker-compose up -d
+  runScripts
+  docker-compose logs -f
+}
+
+doPull()
+{
+  git clone git@github.com:Keloran/fakenews_api.git api
+  git clone git@github.com:Keloran/fakenews_frontend.git frontend
+}
+
+runScripts()
+{
+  ./frontend.sh
+  ./api.sh
+}
+
+doFull
