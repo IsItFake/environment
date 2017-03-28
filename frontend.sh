@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+CURRENT_DIR=$(pwd)
+
 SAFARI=0
+LOCAL=0
 
 # Usage
 usage()
@@ -11,11 +14,12 @@ cat << EOF
   usage $0 options
     -h: this message
     -s: open safari at end
+    -l: local development
 EOF
 }
 
 # Options
-while getopts ":hs:" OPTION; do
+while getopts ":lhs:" OPTION; do
   case $OPTION in
     h)
       usage
@@ -25,14 +29,27 @@ while getopts ":hs:" OPTION; do
     s)
       SAFARI=1
       ;;
+
+    l)
+      LOCAL=1
+      ;;
   esac
 done
 
 doBuild()
 {
-  docker-compose stop frontend
-  docker-compose build frontend
-  docker-compose up -d frontend
+  if [ $LOCAL -eq 1 ]; then
+    cd $CURRENT_DIR/frontend
+
+    export PORT=9000
+    ./node_modules/nodemon/bin/nodemon.js main.js
+  else
+    cd $CURRENT_DIR
+
+    docker-compose stop frontend
+    docker-compose build frontend
+    docker-compose up -d frontend
+  fi
 }
 
 doSafari()
