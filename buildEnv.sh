@@ -43,8 +43,8 @@ doFull()
 
 doPull()
 {
-  git clone git@github.com:Keloran/fakenews_api.git api
-  git clone git@github.com:Keloran/fakenews_frontend.git frontend
+  git clone git@github.com:isitfake/api.git api
+  git clone git@github.com:isitfake/frontend.git frontend
 }
 
 runScripts()
